@@ -51,14 +51,30 @@ class Post extends CI_Controller {
 
     }
 
-    public function cari($keyword) {
+    public function cari() {
+        $keyword = $this->input->get('keyword', TRUE);
         $this->load->model('mpost');
-        $data = $this->mpost->search($keyword, 'content');
-        foreach ($data as $value) {
+        $this->load->library('pagination');
+        $total = $this->mpost->search($keyword, 'content')->num_rows();
+        $config['base_url'] =  base_url().'index.php/post/cari?keyword='.$keyword;
+        $config['total_rows'] = $total;
+        $config['per_page'] = 6;
+        $config['query_string_segment'] = 'page';
+        $config['page_query_string'] = TRUE;
+        $config['use_page_numbers'] = TRUE;
+        $this->pagination->initialize($config);
+        $pagenum = $this->input->get('page', TRUE);
+        $from = ($pagenum  == 0) ? 0 : ($pagenum * $config['per_page']) - $config['per_page']; //page number dari perkalian halaman dan perpage
+        $data = $this->mpost->search($keyword, 'content', $from, $config['per_page']);
+        foreach ($data->result() as $value) {
             $judul = $value->title;
             $isi = $value->content;
-            echo $judul." : $isi <br>";
+            $id = $value->id;
+            echo $id." ".$judul." : $isi <br>";
         }
+
+        echo "<br>";
+        echo $this->pagination->create_links();
     }
 
     public function page() {

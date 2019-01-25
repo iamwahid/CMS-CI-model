@@ -5,16 +5,29 @@ class Mpost extends CMS_Model {
         parent::__construct($table);
     }
 
-    public function search($keyword, $column = 'title') {
+    public function search($keyword, $column = 'title', $from = 0, $num = 0) {
         $this->db->select('*');
         $this->db->from($this->table);
         $this->db->like($column, $keyword);
-        return $this->db->get()->result();
+        if ($num > 0 || $from > 0) {
+            $this->db->limit($num, $from);
+        }
+
+        return $this->db->get();
     }
 
-    function show($num, $offs) {
-        return $query  = $this->db->get($this->table, $num, $offs)->result();
+    function show($offs, $num) {
+        return $query  = $this->db->get($this->table, $offs, $num)->result();
     }
+
+    public function searchcount($keyword, $column = 'title')
+	{
+        $this->db->select('*');
+        $this->db->from($this->table);
+        $this->db->like($column, $keyword);
+		$q = $this->db->get();
+		return $q->num_rows();
+	}
 
 }
 ?>
