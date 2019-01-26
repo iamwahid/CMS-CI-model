@@ -22,21 +22,37 @@ class Post extends CI_Controller {
     }
 
     public function add() {
-        $judul = "City in Indonesia";
-        $data = [
+        echo "<form action='' method='post'>";
+        echo "<input type='text' name='title' required placeholder='Post Title'><br>";
+        echo "<textarea name='content' required placeholder='Post Content'></textarea>";
+        echo "<select name='status'>";
+        echo "<option value='0' disabled selected hidden>Pilih</option>";
+        echo "<option value='1'>Satu</option>";
+        echo "<option value='2'>Dua</option>";
+        echo "</select>";
+        echo "<input type='submit' name='submit' value='Submit'><br>";
+        echo "</form>";
+
+
+
+        if ($this->input->post('submit', TRUE) != null) {
+            $judul = $this->input->post('title', TRUE);
+            $this->load->model('mpost');
+            $data = [
             "id" => "",
             "author" => 1,
             "title" => $judul,
-            "content" => "PonorogoxMadiun, Jakarta, Bandung",
-            "status" => 0,
-            "slug" => strtolower(str_replace(' ', '-', $judul)),
+            "content" => $this->input->post('content', TRUE),
+            "status" => $this->input->post('status', TRUE),
+            "slug" => $this->mpost->makeslug($judul, 0) ,
             "parent" => 0,
             "post_type" => "post",
             "post_created" => date('Y-m-d h:m:s:ss'),
             "post_modified" => time(),
-        ];
-        $this->load->model('mpost');
+            ];
+        
         $this->mpost->save($data);
+        }
     }
 
     public function single($id) {

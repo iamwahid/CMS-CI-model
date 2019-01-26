@@ -27,7 +27,17 @@ class Mpost extends CMS_Model {
         $this->db->like($column, $keyword);
 		$q = $this->db->get();
 		return $q->num_rows();
-	}
+    }
+    
+    public function makeslug($title, $count = 0) {
+        $temp_slug = strtolower(str_replace(' ', '-', $title));
+        $count++;
+        if ( $this->isUnique('slug', $temp_slug) ) {
+            return $temp_slug;
+        } else {
+            return $this->makeslug($title.' '.$count, $count);
+        }
+    }
 
 }
 ?>
